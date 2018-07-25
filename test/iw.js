@@ -24,6 +24,7 @@
 var should = require('should');
 var iw = require('../iw');
 
+
 var IW_SCAN_LINUX = "BSS 14:91:82:c7:76:b9(on wlan0)\n" +
 "        TSF: 337644127 usec (0d, 00:05:37)\n" +
 "        freq: 2412\n" +
@@ -643,6 +644,16 @@ var IW_SCAN_LINUX = "BSS 14:91:82:c7:76:b9(on wlan0)\n" +
 "                 * VI: CW 7-15, AIFSN 2, TXOP 3008 usec\n" +
 "                 * VO: CW 3-7, AIFSN 2, TXOP 1504 usec\n"
 
+
+var IW_LINK_SUCCESS_LINUX = "Connected to 14:91:82:c7:76:b9 (on wlan0)\n" +
+    "   SSID: FOO\n" +
+    "   freq: 2437\n" +
+    "   signal: -33 dBm\n" +
+    "   tx bitrate: 144.0 MBit/s\n";
+
+var IW_LINK_NONE_LINUX = "Not connected\n";
+
+
 describe('iw', function() {
   describe('iw.scan(interface, callback)', function() {
     it('should scan the specified interface', function(done) {
@@ -856,5 +867,49 @@ describe('iw', function() {
         done();
       });
     })
-  })
+  });
+    describe('iw.link(interface, callback)', function() {
+        it('should show connected ap on the specified interface', function(done) {
+            iw.exec = function(command, callback) {
+                should(command).eql('iw dev wlan0 link');
+                callback(null, IW_LINK_SUCCESS_LINUX, '');
+            };
+
+            iw.link('wlan0', function(err, status) {
+                should(status).eql({
+                    ssid: "FOO",
+                    address: "14:91:82:c7:76:b9",
+                    frequency: 2437,
+                    signal: -33,
+                    tx_bitrate: 144.0,
+                });
+                done();
+            });
+        })
+
+        it('should not fill in fields that are missing', function(done) {
+            iw.exec = function(command, callback) {
+                should(command).eql('iw dev wlan0 link');
+                callback(null, IW_LINK_NONE_LINUX, '');
+            };
+
+            iw.link('wlan0', function(err, status) {
+                should(status).eql({});
+                done();
+            });
+        })
+
+
+
+        it('should handle errors', function(done) {
+            iw.exec = function(command, callback) {
+                callback('error');
+            };
+
+            iw.link('wlan0', function(err, status) {
+                should(err).eql('error');
+                done();
+            });
+        })
+    })
 })
