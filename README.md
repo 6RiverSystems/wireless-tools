@@ -736,3 +736,29 @@ iw.scan({ iface : 'wlan0', show_hidden : true }, function(err, networks) {
   }
 ]
 ```
+
+## iw.link(interface, callback)
+The **iw link** command is used to get information about the current wireless connection
+
+``` javascript
+var iw = require('wireless-tools/iw');
+
+iw.link('wlan0', function(err, information) {
+  console.log(information);
+});
+
+// =>
+{s
+  address: '00:0b:81:fd:42:01',
+  frequency: 2412,
+  signal: -94,
+  ssid: 'Foo',
+  tx_bitrate: 144.0
+}
+```
+If the device is not connected, the output will be
+
+``` javascript
+// =>
+{}
+```

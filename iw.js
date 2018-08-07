@@ -32,7 +32,8 @@ var child_process = require('child_process');
  */
 var iw = module.exports = {
   exec: child_process.exec,
-  scan: scan
+  scan: scan,
+  link: link
 };
 
 /**
@@ -189,4 +190,60 @@ function scan(options, callback) {
   }
 
   this.exec('iw dev ' + interface + ' scan', parse_scan(show_hidden, callback));
+}
+
+function parse_link_result(res) {
+    var parsed = { };
+    var match;
+
+    if ((match = res.match(/Connected to ([0-9A-Fa-f:-]{17}) \(on/))) {
+        parsed.address = match[1].toLowerCase();
+    }
+
+    if ((match = res.match(/freq: ([0-9]+)/))) {
+        parsed.frequency = parseInt(match[1], 10);
+    }
+
+    if ((match = res.match(/signal: (-?[0-9.]+) dBm/))) {
+        parsed.signal = parseFloat(match[1]);
+    }
+
+    if ((match = res.match(/tx bitrate: (-?[0-9.]+) MBit/))) {
+        parsed.tx_bitrate = parseFloat(match[1]);
+    }
+
+    if ((match = res.match(/SSID: ([^\n]*)/))) {
+        parsed.ssid = match[1];
+    }
+    return parsed;
+}
+
+/**
+ * Parses all scanned wireless network cells.
+ *
+ * @private
+ * @static
+ * @category iw
+ * @param {function} callback The callback function.
+ *
+ */
+function parse_link(callback) {
+    return function(error, stdout, stderr) {
+        if (error) callback(error);
+        else
+            callback(error, parse_link_result(stdout));
+    };
+}
+
+/**
+ * The **iw link** command is used to see information about the wireless network
+ * to which the wireless interface is currently attached.
+ *
+ * @static
+ * @category iw
+ * @param {string} wireless_interface The wireless network interface.
+ * @param {function} callback The callback function.
+ */
+function link(wireless_interface, callback) {
+  this.exec('iw dev ' + wireless_interface + ' link', parse_link(callback));
 }
