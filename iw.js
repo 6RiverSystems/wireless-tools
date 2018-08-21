@@ -233,7 +233,7 @@ function parse_link(callback) {
     return function(error, stdout, stderr) {
         if (error) callback(error);
         else
-            callback(error, parse_link_result(stdout);
+            callback(error, parse_link_result(stdout));
     };
 }
 
@@ -247,7 +247,7 @@ function parse_link(callback) {
  * @param {function} callback The callback function.
  */
 function link(options, callback) {
-    var interface, show_hidden, use_sudo;
+    var interface, use_sudo;
     if (typeof options === 'string') {
         var interface = options;
         var use_sudo = false;
