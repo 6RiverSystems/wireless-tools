@@ -180,16 +180,18 @@ function parse_scan(show_hidden, callback) {
  * @param {function} callback The callback function.
  */
 function scan(options, callback) {
-  var interface, show_hidden
+  var interface, show_hidden, use_sudo;
   if (typeof options === 'string') {
     var interface = options;
     var show_hidden = false;
+    var use_sudo = false;
   } else {
     var interface = options.iface;
     var show_hidden = options.show_hidden || false;
+    var use_sudo = options.use_sudo || false;
   }
 
-  this.exec('iw dev ' + interface + ' scan', parse_scan(show_hidden, callback));
+  this.exec((use_sudo ? 'sudo ' : '') + 'iw dev ' + interface + ' scan', parse_scan(show_hidden, callback));
 }
 
 function parse_link_result(res) {
@@ -231,7 +233,7 @@ function parse_link(callback) {
     return function(error, stdout, stderr) {
         if (error) callback(error);
         else
-            callback(error, parse_link_result(stdout));
+            callback(error, parse_link_result(stdout);
     };
 }
 
@@ -244,6 +246,14 @@ function parse_link(callback) {
  * @param {string} wireless_interface The wireless network interface.
  * @param {function} callback The callback function.
  */
-function link(wireless_interface, callback) {
-  this.exec('iw dev ' + wireless_interface + ' link', parse_link(callback));
+function link(options, callback) {
+    var interface, show_hidden, use_sudo;
+    if (typeof options === 'string') {
+        var interface = options;
+        var use_sudo = false;
+    } else {
+        var interface = options.iface;
+        var use_sudo = options.use_sudo || false;
+    }
+    this.exec((use_sudo ? 'sudo ' : '') + 'iw dev ' + wireless_interface + ' link', parse_link(callback));
 }
