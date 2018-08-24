@@ -180,16 +180,18 @@ function parse_scan(show_hidden, callback) {
  * @param {function} callback The callback function.
  */
 function scan(options, callback) {
-  var interface, show_hidden
+  var iface, show_hidden, use_sudo;
   if (typeof options === 'string') {
-    var interface = options;
+    var iface = options;
     var show_hidden = false;
+    var use_sudo = false;
   } else {
-    var interface = options.iface;
+    var iface = options.iface;
     var show_hidden = options.show_hidden || false;
+    var use_sudo = options.use_sudo || false;
   }
 
-  this.exec('iw dev ' + interface + ' scan', parse_scan(show_hidden, callback));
+  this.exec((use_sudo ? 'sudo ' : '') + 'iw dev ' + iface + ' scan', parse_scan(show_hidden, callback));
 }
 
 function parse_link_result(res) {
@@ -241,9 +243,17 @@ function parse_link(callback) {
  *
  * @static
  * @category iw
- * @param {string} wireless_interface The wireless network interface.
+ * @param {string} interface The wireless network interface.
  * @param {function} callback The callback function.
  */
-function link(wireless_interface, callback) {
-  this.exec('iw dev ' + wireless_interface + ' link', parse_link(callback));
+function link(options, callback) {
+    var iface, use_sudo;
+    if (typeof options === 'string') {
+        var iface = options;
+        var use_sudo = false;
+    } else {
+        var iface = options.iface;
+        var use_sudo = options.use_sudo || false;
+    }
+    this.exec((use_sudo ? 'sudo ' : '') + 'iw dev ' + iface + ' link', parse_link(callback));
 }
