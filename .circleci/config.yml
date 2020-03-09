@@ -28,10 +28,6 @@ jobs:
       - attach_workspace:
           at: ./
       - sixrs-gke/run-release
-      - run:
-          name: npm build
-          command: |
-            npm run build
       - sixrs-gke/npm-publish
 
 workflows:
