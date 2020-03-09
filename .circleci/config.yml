@@ -1,0 +1,51 @@
+version: 2.1
+orbs:
+  sixrs-gke: sixriversystems/sixrs-gke@2.1.3
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.16.2
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: npm ci
+      - run:
+          name: npm test
+          command: npm test
+      - run:
+          name: posttest
+          command: npm run posttest
+      - store_artifacts:
+          path: reports/junit/
+          prefix: reports/junit/
+      - store_test_results:
+          path: reports/junit/
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - .
+
+  publish:
+    docker:
+      - image: circleci/node:10.17.0
+    steps:
+      - attach_workspace:
+          at: ./
+      - sixrs-gke/run-release
+      - run:
+          name: npm build
+          command: |
+            npm run build
+      - sixrs-gke/npm-publish
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          context: 6rs-circle
+      - publish:
+          context: 6rs-circle
+          requires:
+            - build
