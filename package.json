@@ -27,7 +27,7 @@
   },
   "scripts": {
     "test": "istanbul cover node_modules/.bin/_mocha",
-    "posttest": "istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100",
+    "posttest": "istanbul check-coverage --statements 99.49 --functions 100 --branches 97.45 --lines 99.48",
     "codeclimate": "codeclimate-test-reporter < coverage/lcov.info"
   },
   "xo": {
