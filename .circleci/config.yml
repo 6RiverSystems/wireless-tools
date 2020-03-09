@@ -16,11 +16,6 @@ jobs:
       - run:
           name: posttest
           command: npm run posttest
-      - store_artifacts:
-          path: reports/junit/
-          prefix: reports/junit/
-      - store_test_results:
-          path: reports/junit/
       - persist_to_workspace:
           root: ./
           paths:
