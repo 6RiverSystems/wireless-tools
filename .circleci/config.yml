@@ -13,20 +13,6 @@ jobs:
       - run:
           name: npm test
           command: npm test
-      - run:
-          name: posttest
-          command: npm run posttest
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - .
-
-  publish:
-    docker:
-      - image: circleci/node:10.17.0
-    steps:
-      - attach_workspace:
-          at: ./
       - sixrs-gke/run-release
       - sixrs-gke/npm-publish
 
@@ -36,7 +22,3 @@ workflows:
     jobs:
       - build:
           context: 6rs-circle
-      - publish:
-          context: 6rs-circle
-          requires:
-            - build
