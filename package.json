@@ -1,5 +1,5 @@
 {
-  "name": "wireless-tools",
+  "name": "@sixriver/wireless-tools",
   "version": "0.20.0-6RiverSystems",
   "description": "Wireless tools for Node.js",
   "author": "Christopher M. Baker",
