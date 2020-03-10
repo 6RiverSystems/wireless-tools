@@ -1,0 +1,31 @@
+version: 2.1
+orbs:
+  sixrs-gke: sixriversystems/sixrs-gke@2.1.3
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.16.2
+    steps:
+      - checkout
+      - run:
+          name: Setup CI Environment
+          command: |
+            mkdir ci_scripts
+            curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept:application/vnd.github.v3.raw"  https://api.github.com/repos/6RiverSystems/ci_scripts/contents/ci_tool.sh > ci_scripts/ci_tool.sh
+            chmod +x ci_scripts/ci_tool.sh
+            ci_scripts/ci_tool.sh --setup_npm
+      - run:
+          name: Install Dependencies
+          command: npm ci
+      - run:
+          name: npm test
+          command: npm test
+      - sixrs-gke/run-release
+      - sixrs-gke/npm-publish
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          context: 6rs-circle
